@@ -2,7 +2,7 @@
 Serializer module
 """
 from rest_framework import serializers
-from foro_user.models import User, Thread
+from foro_user.models import User, Thread, Board
 
 # Serializers define the API representation.
 class UserSerializer(serializers.ModelSerializer):
@@ -25,11 +25,22 @@ class ThreadSerializer(serializers.ModelSerializer):
     """
     Serializer for Thread model
     """
+    board_id = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all(), source="board.id")
+    user = UserSerializer(many=False, read_only=True)
+
     class Meta:
         model = Thread
-        fields = ('title', 'board', 'user', 'lastUser', 'updateDate', 'postCount')
+        fields = ('title', 'board', 'user', 'lastUser', 'creationDate', 'updateDate', 'postCount', 'board_id')
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
+        instance.updateDate = datetime.now()
         instance.save()
         return instance
+
+class BoardSerializer(serializers.ModelSerializer):
+    threads = ThreadSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Board
+        fields = ('name', 'description', 'threads')

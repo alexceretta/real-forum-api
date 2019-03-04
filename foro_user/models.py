@@ -33,7 +33,7 @@ class Thread(models.Model):
     Main Thread class
     """
     title = models.CharField(max_length=255)
-    board = models.ForeignKey("Board", on_delete=models.CASCADE)
+    board = models.ForeignKey(Board, related_name="threads", on_delete=models.CASCADE)
     user = models.ForeignKey("User", related_name="user", on_delete=models.PROTECT)
     lastUser = models.ForeignKey("User", related_name="lastUser", null=True, on_delete=models.PROTECT)
     creationDate = models.DateTimeField(auto_now_add=True)

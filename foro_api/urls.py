@@ -13,14 +13,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path, re_path, include
+from django.urls import path, include
 from rest_framework import routers
 from foro_user import views
 
 # Routers provide an easy way of automatically determining the URL conf.
-router = routers.DefaultRouter()
+ROUTER = routers.DefaultRouter()
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))    
+    path('', include(ROUTER.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('boards/<int:pk>', views.BoardDetail.as_view())
 ]
