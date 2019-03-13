@@ -27,6 +27,7 @@ class ThreadSerializer(serializers.ModelSerializer):
     """
     board_id = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all(), source="board.id")
     user = UserSerializer(many=False, read_only=True)
+    lastUser = UserSerializer(many=False, read_only=True)
 
     class Meta:
         model = Thread
