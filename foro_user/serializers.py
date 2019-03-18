@@ -1,6 +1,8 @@
 """
 Serializer module
 """
+from datetime import datetime
+
 from rest_framework import serializers
 from foro_user.models import User, Thread, Board
 
@@ -25,23 +27,27 @@ class ThreadSerializer(serializers.ModelSerializer):
     """
     Serializer for Thread model
     """
-    board_id = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all(), source="board.id")
-    user = UserSerializer(many=False, read_only=True)
-    lastUser = UserSerializer(many=False, read_only=True)
+    board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all())
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    lastUser = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
         model = Thread
-        fields = ('title', 'board', 'user', 'lastUser', 'creationDate', 'updateDate', 'postCount', 'board_id')
+        fields = '__all__'
+        depth=1
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
-        instance.updateDate = datetime.now()
+        instance.lastUser = validated_data.get('lastUser', instance.lastUser)
+        instance.updateDate = datetime.now()        
         instance.save()
         return instance
 
 class BoardSerializer(serializers.ModelSerializer):
-    threads = ThreadSerializer(many=True, read_only=True)
-
+    """
+    Serializer for Board model
+    """
     class Meta:
         model = Board
         fields = ('name', 'description', 'threads')
+        depth=2
