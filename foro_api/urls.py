@@ -14,8 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, include
+from django.conf.urls.static import static
 from rest_framework import routers
 from foro_user import views
+from foro_api import settings
 
 # Routers provide an easy way of automatically determining the URL conf.
 ROUTER = routers.DefaultRouter()
@@ -26,5 +28,7 @@ urlpatterns = [
     path('boards/<int:pk>', views.BoardDetail.as_view()),
     path('threads/', views.ThreadList.as_view()),
     path('threads/<int:pk>', views.ThreadDetail.as_view()),
-    path('users/<int:pk>', views.UserDetail.as_view()),
+    path('users/<int:pk>', views.UserDetail.as_view()),    
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
