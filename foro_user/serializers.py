@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'auth0Id', 'name', 'email', 'birthDate', 'avatar', 'title',
                   'registrationDate', 'avatar_url')
 
-    def update(self, instance, validated_data):
+    def update(self, instance, validated_data):        
         instance.birthDate = validated_data.get('birthDate', instance.birthDate)
         instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.title = validated_data.get('title', instance.title)
@@ -26,7 +26,10 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
     def get_image_url(self, obj):
-        return obj.avatar.url
+        if obj.avatar:
+            return obj.avatar.url
+        else:
+            return ""
 
 class ThreadSerializer(serializers.ModelSerializer):
     """

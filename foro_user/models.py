@@ -11,7 +11,7 @@ class User(models.Model):
     name = models.CharField(max_length=30)
     email = models.EmailField()
     birthDate = models.DateField()
-    avatar = models.ImageField(upload_to="avatars")
+    avatar = models.ImageField(upload_to="avatars", null=True)
     title = models.CharField(max_length=50, default="New User")
     registrationDate = models.DateTimeField(auto_now_add=True)
 
