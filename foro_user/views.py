@@ -1,8 +1,8 @@
 #from rest_framework import status
 from django.http import Http404
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
-from rest_framework import generics
+from rest_framework import generics, viewsets
 from rest_framework.views import APIView
 from rest_framework import status
 from foro_user.models import Thread, Board, User
@@ -40,6 +40,20 @@ class UserDetail(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserAuthViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for additional user requests
+    """    
+
+    @action(detail=False)
+    def get_from_auth(self, request, authId):
+        try:
+            user = User.objects.get(auth0Id=authId)
+            serializer = UserSerializer(user)
+            return Response(serializer.data)
+        except User.DoesNotExist:
+            raise Http404
 
 class ThreadList(generics.ListCreateAPIView):
     """

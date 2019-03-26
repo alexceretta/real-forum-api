@@ -28,7 +28,8 @@ urlpatterns = [
     path('boards/<int:pk>', views.BoardDetail.as_view()),
     path('threads/', views.ThreadList.as_view()),
     path('threads/<int:pk>', views.ThreadDetail.as_view()),
-    path('users/<int:pk>', views.UserDetail.as_view()),    
+    path('users/<int:pk>', views.UserDetail.as_view(), name="users"),
+    path('users/auth/<authId>', views.UserAuthViewSet.as_view({ 'get': 'get_from_auth' }), name="users-auth"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

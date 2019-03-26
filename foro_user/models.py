@@ -7,7 +7,7 @@ class User(models.Model):
     """
     Main User class
     """
-    auth0Id = models.CharField(max_length=100)
+    auth0Id = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=30)
     email = models.EmailField()
     birthDate = models.DateField()
