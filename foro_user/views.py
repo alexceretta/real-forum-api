@@ -12,7 +12,7 @@ class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     Get Board details and list its threads
     """
-    queryset = Board.objects.prefetch_related('threads').all()
+    queryset = Board.objects.all()
     serializer_class = BoardSerializer
 
 class UserDetail(APIView):
@@ -59,8 +59,17 @@ class ThreadList(generics.ListCreateAPIView):
     """
     List and Create operations for Thread model
     """
-    queryset = Thread.objects.all()
+    model = Thread
     serializer_class = ThreadSerializer
+
+    def get_queryset(self):
+        queryset = Thread.objects.all()
+        board = self.request.query_params.get('board')
+
+        if board:
+            queryset = queryset.filter(boardId=board)
+        
+        return queryset
 
 
 class ThreadDetail(generics.RetrieveUpdateDestroyAPIView):

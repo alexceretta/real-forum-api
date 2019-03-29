@@ -36,13 +36,12 @@ class ThreadSerializer(serializers.ModelSerializer):
     Serializer for Thread model
     """
     board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all())
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    lastUser = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    user = UserSerializer(many=False)
+    lastUser = UserSerializer(many=False)
 
     class Meta:
         model = Thread
         fields = '__all__'
-        depth=1
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
@@ -57,5 +56,5 @@ class BoardSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Board
-        fields = ('name', 'description', 'threads')
-        depth=2
+        fields = ('name', 'description')
+        depth=0
