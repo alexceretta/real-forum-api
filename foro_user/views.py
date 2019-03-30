@@ -8,6 +8,13 @@ from rest_framework import status
 from foro_user.models import Thread, Board, User
 from foro_user.serializers import ThreadSerializer, BoardSerializer, UserSerializer
 
+class BoardList(generics.ListCreateAPIView):
+    """
+    List and create operations for boards
+    """
+    queryset = Board.objects.all()
+    serializer_class = BoardSerializer
+
 class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     Get Board details and list its threads
@@ -64,10 +71,9 @@ class ThreadList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = Thread.objects.all()
-        board = self.request.query_params.get('board')
-
+        board = self.request.query_params.get('board')        
         if board:
-            queryset = queryset.filter(boardId=board)
+            queryset = queryset.filter(board_id=board)
         
         return queryset
 

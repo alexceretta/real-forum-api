@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path, include
+from django.urls import path, re_path, include
 from django.conf.urls.static import static
 from rest_framework import routers
 from foro_user import views
@@ -25,9 +25,10 @@ ROUTER = routers.DefaultRouter()
 urlpatterns = [
     path('', include(ROUTER.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('boards', views.BoardList.as_view()),
     path('boards/<int:pk>', views.BoardDetail.as_view()),
-    path('threads/board=<boardId>', views.ThreadList.as_view()),
-    path('threads/<int:pk>', views.ThreadDetail.as_view()),
+    re_path(r'^threads$', views.ThreadList.as_view(), name="thread-list"),
+    path('threads/<int:pk>', views.ThreadDetail.as_view(), name="thread-detail"),
     path('users/<int:pk>', views.UserDetail.as_view(), name="users"),
     path('users/auth/<authId>', views.UserAuthViewSet.as_view({ 'get': 'get_from_auth' }), name="users-auth"),
 ]

@@ -56,5 +56,5 @@ class BoardSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Board
-        fields = ('name', 'description')
+        fields = '__all__'
         depth=0
