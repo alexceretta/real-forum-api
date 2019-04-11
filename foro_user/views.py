@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework import generics, viewsets
 from rest_framework.views import APIView
 from rest_framework import status
-from foro_user.models import Thread, Board, User
-from foro_user.serializers import ThreadSerializer, BoardSerializer, UserSerializer
+from foro_user.models import Thread, Board, User, Post
+from foro_user.serializers import ThreadSerializer, BoardSerializer, UserSerializer, PostSerializer
 
 class BoardList(generics.ListCreateAPIView):
     """
@@ -37,8 +37,9 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
 
     def put(self, request, pk, format=None):
-        user = self.get_object(pk)        
-        serializer = UserSerializer(user, data=request.data, partial=True)
+        user = User.objects.get(pk=pk)
+        print(request.data)
+        serializer = UserSerializer(user, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -53,7 +54,7 @@ class UserAuthViewSet(viewsets.ModelViewSet):
     def get_from_auth(self, request, authId):
         try:
             user = User.objects.get(auth0Id=authId)
-            serializer = UserSerializer(user)
+            serializer = UserSerializer(user, context={'request': request})
             return Response(serializer.data)
         except User.DoesNotExist:
             raise Http404
@@ -80,3 +81,17 @@ class ThreadDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Thread.objects.all()
     serializer_class = ThreadSerializer
+
+class PostList(generics.ListCreateAPIView):
+    """
+    List and Create operations for Post model
+    """
+    model = Post
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        queryset = Post.objects.all()
+        thread = self.request.query_params.get('thread')
+        if thread:
+            queryset = queryset.filter(thread_id = thread)
+        return queryset

@@ -4,7 +4,7 @@ Serializer module
 from datetime import datetime
 
 from rest_framework import serializers
-from foro_user.models import User, Thread, Board
+from foro_user.models import User, Thread, Board, Post
 
 # Serializers define the API representation.
 class UserSerializer(serializers.ModelSerializer):
@@ -25,17 +25,27 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-    def get_image_url(self, obj):
+    def get_image_url(self, obj):        
         if obj.avatar:
-            return obj.avatar.url
+            request = self.context.get('request')            
+            return request.build_absolute_uri(obj.avatar.url)
         else:
             return ""
+
+class BoardSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Board model
+    """
+    class Meta:
+        model = Board
+        fields = '__all__'
+        depth=0
 
 class ThreadSerializer(serializers.ModelSerializer):
     """
     Serializer for Thread model
     """
-    board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all())
+    board = BoardSerializer(many=False)
     user = UserSerializer(many=False)
     lastUser = UserSerializer(many=False)
 
@@ -50,11 +60,13 @@ class ThreadSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-class BoardSerializer(serializers.ModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
     """
-    Serializer for Board model
+    Serializer for Post model
     """
+    thread = serializers.PrimaryKeyRelatedField(queryset=Thread.objects.all())
+    user = UserSerializer(many=False)
+
     class Meta:
-        model = Board
+        model = Post
         fields = '__all__'
-        depth=0

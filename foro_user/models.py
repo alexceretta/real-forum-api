@@ -34,11 +34,21 @@ class Thread(models.Model):
     """
     title = models.CharField(max_length=255)
     board = models.ForeignKey("Board", related_name="threads", on_delete=models.CASCADE)
-    user = models.ForeignKey("User", related_name="user", on_delete=models.PROTECT)
-    lastUser = models.ForeignKey("User", related_name="lastUser", null=True, on_delete=models.PROTECT)
+    user = models.ForeignKey("User", related_name="+", on_delete=models.PROTECT)
+    lastUser = models.ForeignKey("User", related_name="+", null=True, on_delete=models.PROTECT)
     creationDate = models.DateTimeField(auto_now_add=True)
     updateDate = models.DateTimeField(auto_now_add=True)
     postCount = models.IntegerField(default=1)
 
     class Meta:
         ordering = ("updateDate",)
+
+class Post(models.Model):
+    """
+    Main Post class
+    """
+    message = models.TextField()
+    thread = models.ForeignKey(Thread, related_name="posts", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="+", on_delete=models.PROTECT)
+    creationDate = models.DateTimeField(auto_now_add=True)
+    updateDate = models.DateTimeField(auto_now_add=True)

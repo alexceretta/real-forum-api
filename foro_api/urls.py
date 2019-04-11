@@ -28,6 +28,7 @@ urlpatterns = [
     path('boards', views.BoardList.as_view()),
     path('boards/<int:pk>', views.BoardDetail.as_view()),
     re_path(r'^threads$', views.ThreadList.as_view(), name="thread-list"),
+    re_path(r'^posts$', views.PostList.as_view(), name="post-list"),
     path('threads/<int:pk>', views.ThreadDetail.as_view(), name="thread-detail"),
     path('users', views.UserList.as_view(), name="user-list"),
     path('users/<int:pk>', views.UserDetail.as_view(), name="users"),
