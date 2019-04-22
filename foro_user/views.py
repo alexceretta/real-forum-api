@@ -6,7 +6,7 @@ from rest_framework import generics, viewsets
 from rest_framework.views import APIView
 from rest_framework import status
 from foro_user.models import Thread, Board, User, Post
-from foro_user.serializers import ThreadSerializer, BoardSerializer, UserSerializer, PostSerializer
+from foro_user.serializers import ThreadSerializer, ThreadListSerializer, BoardSerializer, UserSerializer, PostSerializer
 
 class BoardList(generics.ListCreateAPIView):
     """
@@ -64,7 +64,7 @@ class ThreadList(generics.ListCreateAPIView):
     List and Create operations for Thread model
     """
     model = Thread
-    serializer_class = ThreadSerializer
+    serializer_class = ThreadListSerializer
 
     def get_queryset(self):
         queryset = Thread.objects.all()

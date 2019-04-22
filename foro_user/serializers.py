@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for User model
     """
-    avatar_url = serializers.SerializerMethodField('get_image_url');
+    avatar_url = serializers.SerializerMethodField('get_image_url')
 
     class Meta:
         model = User
@@ -41,13 +41,27 @@ class BoardSerializer(serializers.ModelSerializer):
         fields = '__all__'
         depth=0
 
+class ThreadListSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Thread model (for listing)
+    """
+    board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all())
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    user_details = UserSerializer(many=False, read_only=True, source="user")
+    lastUser = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+
+    class Meta:
+        model = Thread
+        fields = "__all__"
+
 class ThreadSerializer(serializers.ModelSerializer):
     """
     Serializer for Thread model
     """
-    board = BoardSerializer(many=False)
-    user = UserSerializer(many=False)
-    lastUser = UserSerializer(many=False)
+    board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all())
+    board_details = BoardSerializer(many=False, read_only=True, source="board")
+    user = UserSerializer(many=False, read_only=True)
+    lastUser = UserSerializer(many=False, read_only=True)
 
     class Meta:
         model = Thread
@@ -65,7 +79,8 @@ class PostSerializer(serializers.ModelSerializer):
     Serializer for Post model
     """
     thread = serializers.PrimaryKeyRelatedField(queryset=Thread.objects.all())
-    user = UserSerializer(many=False)
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    user_details = UserSerializer(many=False, read_only=True, source="user")
 
     class Meta:
         model = Post
