@@ -102,7 +102,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',        
         'NAME': 'real_forum',
         'USER': 'postgres',
-        'PASSWORD': 'hamburguer',
+        'PASSWORD': 'admin',
         'HOST': 'localhost',
         'PORT': '5432',        
     }
