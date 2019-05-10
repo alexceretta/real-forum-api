@@ -54,6 +54,19 @@ class ThreadListSerializer(serializers.ModelSerializer):
         model = Thread
         fields = "__all__"
 
+class ThreadPostSerializer(serializers.Serializer):
+    """
+    Serializer for Thread and Post models for CREATE methods
+    """
+    title = serializers.CharField(required=True, max_length=255)
+    message = serializers.CharField(max_length=None,required=True)
+    board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all(), required=True)
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=True)
+
+    def create(self, validated_data):
+        thread = Thread.objects.create_new_thread(**validated_data)
+        return thread
+
 class ThreadSerializer(serializers.ModelSerializer):
     """
     Serializer for Thread model

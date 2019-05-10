@@ -27,7 +27,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('boards', views.BoardList.as_view()),
     path('boards/<int:pk>', views.BoardDetail.as_view()),
-    re_path(r'^threads$', views.ThreadList.as_view(), name="thread-list"),
+    re_path(r'^threads$', views.ThreadListCreate.as_view(), name="thread-list-create"),
     re_path(r'^posts$', views.PostList.as_view(), name="post-list"),
     path('threads/<int:pk>', views.ThreadDetail.as_view(), name="thread-detail"),
     path('users', views.UserList.as_view(), name="user-list"),

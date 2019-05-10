@@ -6,7 +6,9 @@ from rest_framework import generics, viewsets
 from rest_framework.views import APIView
 from rest_framework import status
 from foro_user.models import Thread, Board, User, Post
-from foro_user.serializers import ThreadSerializer, ThreadListSerializer, BoardSerializer, UserSerializer, PostSerializer
+from foro_user.serializers import ThreadSerializer, ThreadListSerializer, ThreadPostSerializer, BoardSerializer, UserSerializer, PostSerializer
+from pprint import pprint
+
 
 class BoardList(generics.ListCreateAPIView):
     """
@@ -15,6 +17,7 @@ class BoardList(generics.ListCreateAPIView):
     queryset = Board.objects.all()
     serializer_class = BoardSerializer
 
+
 class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     Get Board details and list its threads
@@ -22,12 +25,14 @@ class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Board.objects.all()
     serializer_class = BoardSerializer
 
+
 class UserList(generics.ListCreateAPIView):
     """
     List and create operations for users
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -39,16 +44,18 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     def put(self, request, pk, format=None):
         user = User.objects.get(pk=pk)
         print(request.data)
-        serializer = UserSerializer(user, data=request.data, partial=True, context={'request': request})
+        serializer = UserSerializer(
+            user, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class UserAuthViewSet(viewsets.ModelViewSet):
     """
     ViewSet for additional user requests
-    """    
+    """
 
     @action(detail=False)
     def get_from_auth(self, request, authId):
@@ -59,20 +66,26 @@ class UserAuthViewSet(viewsets.ModelViewSet):
         except User.DoesNotExist:
             raise Http404
 
-class ThreadList(generics.ListCreateAPIView):
+
+class ThreadListCreate(APIView):
     """
     List and Create operations for Thread model
     """
-    model = Thread
-    serializer_class = ThreadListSerializer
 
-    def get_queryset(self):
-        queryset = Thread.objects.all()
-        board = self.request.query_params.get('board')        
+    def get(self, request, format=None):
+        threads = Thread.objects.all()
+        board = self.request.query_params.get('board')
         if board:
-            queryset = queryset.filter(board_id=board)
-        
-        return queryset
+            threads.filter(board_id=board)
+        serializer = ThreadListSerializer(threads, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = ThreadPostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.create(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ThreadDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -81,6 +94,7 @@ class ThreadDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Thread.objects.all()
     serializer_class = ThreadSerializer
+
 
 class PostList(generics.ListCreateAPIView):
     """
@@ -93,5 +107,5 @@ class PostList(generics.ListCreateAPIView):
         queryset = Post.objects.all()
         thread = self.request.query_params.get('thread')
         if thread:
-            queryset = queryset.filter(thread_id = thread)
+            queryset = queryset.filter(thread_id=thread)
         return queryset

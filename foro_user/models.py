@@ -2,6 +2,7 @@
 Module containing all Models related to the USER part of the project
 """
 from django.db import models
+from foro_user.modelManagers import ThreadManager
 
 class User(models.Model):
     """
@@ -39,6 +40,8 @@ class Thread(models.Model):
     creationDate = models.DateTimeField(auto_now_add=True)
     updateDate = models.DateTimeField(auto_now_add=True)
     postCount = models.IntegerField(default=1)
+
+    objects = ThreadManager()
 
     class Meta:
         ordering = ("updateDate",)
